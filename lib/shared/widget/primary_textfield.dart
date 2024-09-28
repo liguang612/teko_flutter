@@ -5,13 +5,15 @@ import 'package:teko_flutter/resources/themes.dart';
 class PrimaryTextfield extends StatelessWidget {
   final TextEditingController controller;
   final bool isRequired;
+  final TextInputType inputType;
   final String title;
 
   const PrimaryTextfield(
       {super.key,
       this.isRequired = false,
       required this.title,
-      required this.controller});
+      required this.controller,
+      this.inputType = TextInputType.text});
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +26,7 @@ class PrimaryTextfield extends StatelessWidget {
       ]),
       const SizedBox(height: 2),
       TextField(
+          controller: controller,
           decoration: InputDecoration(
               border:
                   OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
@@ -32,7 +35,9 @@ class PrimaryTextfield extends StatelessWidget {
                       color: AppColor.black.withOpacity(0.2), width: 0.5)),
               focusedBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: AppColor.black, width: 1)),
-              isDense: true))
+              isDense: true),
+          keyboardType: inputType),
+      const SizedBox(height: 8)
     ]);
   }
 }

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:teko_flutter/config/config.dart';
 import 'package:teko_flutter/config/routes.dart';
 import 'package:teko_flutter/di/di.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await configureInjection();
+  await dotenv.load(fileName: Environment.fileName);
+  configureInjection();
   runApp(const MyApp());
 }
 

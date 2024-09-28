@@ -11,4 +11,5 @@ class EndPoints {
 
 class Environment {
   static String domain = dotenv.env['DOMAIN'] ?? '';
+  static String fileName = 'app_config_test.env';
 }

@@ -1,54 +1,173 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:teko_flutter/data/constants.dart';
+import 'package:teko_flutter/di/di.dart';
+import 'package:teko_flutter/domain/entity/product_page/button.dart';
+import 'package:teko_flutter/domain/entity/product_page/custom_attributes.dart'
+    as attribute;
+import 'package:teko_flutter/domain/entity/product_page/product_list.dart';
+import 'package:teko_flutter/domain/entity/product_page/product_submit_form.dart';
+import 'package:teko_flutter/domain/entity/product_page/title_label.dart';
 import 'package:teko_flutter/resources/colors.dart';
-import 'package:teko_flutter/resources/resources.dart';
 import 'package:teko_flutter/resources/themes.dart';
+import 'package:teko_flutter/shared/widget/pick_image_button.dart';
 import 'package:teko_flutter/shared/widget/primary_button.dart';
 import 'package:teko_flutter/shared/widget/primary_textfield.dart';
+import 'package:teko_flutter/view/product_manage/cubit/product_cubit.dart';
+import 'package:teko_flutter/view/product_manage/product_item.dart';
 
-class ProductManagePage extends StatelessWidget {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController priceController = TextEditingController();
-
+class ProductManagePage extends StatefulWidget {
   ProductManagePage({super.key});
 
   @override
+  State<ProductManagePage> createState() => _ProductManagePageState();
+}
+
+class _ProductManagePageState extends State<ProductManagePage> {
+  String? imageUri;
+  final ProductCubit cubit = getIt.get();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController priceController = TextEditingController();
+
+  TitleLabel? titleLabel;
+  ProductSubmitForm? productSubmitForm;
+  Button? button;
+  ProductList? productList;
+
+  @override
+  void initState() {
+    super.initState();
+
+    cubit.getProductPage();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-            backgroundColor: AppColor.backgroundColor,
-            centerTitle: true,
-            title: Text("Quản lý sản phẩm", style: AppTextTheme.titleBold26)),
-        backgroundColor: AppColor.backgroundColor,
-        body: Padding(
-            padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  PrimaryTextfield(
-                      controller: nameController,
-                      isRequired: true,
-                      title: 'Tên sản phẩm'),
-                  const SizedBox(height: 8),
-                  PrimaryTextfield(
-                      controller: priceController,
-                      isRequired: true,
-                      title: 'Giá sản phẩm'),
-                  const SizedBox(height: 8),
-                  Text('Ảnh sản phẩm', style: AppTextTheme.bodyRegular16),
-                  PrimaryButton(
-                      backgroundColor: AppColor.black01,
-                      prefixIcon: SvgPicture.asset(Assets.icUpload),
-                      title: 'Ảnh sản phẩm'),
-                  const SizedBox(height: 12),
-                  Center(
-                      child: PrimaryButton(
-                          backgroundColor: AppColor.blue,
-                          foregroundColor: AppColor.white,
-                          padding: EdgeInsets.symmetric(horizontal: 30),
-                          title: 'Tạo sản phẩm')),
-                  Expanded(child: Container(color: Colors.amber))
-                ])));
+    return BlocProvider.value(
+        value: cubit,
+        child:
+            BlocBuilder<ProductCubit, ProductState>(builder: (context, state) {
+          if (state is ProductInitial) {
+            return Scaffold(body: Center(child: CircularProgressIndicator()));
+          }
+          if (state is ProductGetProductPageSuccess) {
+            for (var element in state.productPage?.data ?? []) {
+              if (element is TitleLabel) {
+                titleLabel = element;
+              } else if (element is ProductSubmitForm) {
+                productSubmitForm = element;
+              } else if (element is Button) {
+                button = element;
+              } else if (element is ProductList) {
+                productList = element;
+              }
+            }
+          }
+          if (state is ProductCreateProductSuccess) {
+            productList?.customAttributes?.productlist?.items?.add(state.item);
+          }
+
+          return Scaffold(
+              appBar: AppBar(
+                  backgroundColor: AppColor.backgroundColor,
+                  centerTitle: true,
+                  title: Text("${titleLabel?.customAttributes?.label?.text}",
+                      style: AppTextTheme.titleBold26)),
+              backgroundColor: AppColor.backgroundColor,
+              body: Padding(
+                  padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
+                  child: Column(mainAxisSize: MainAxisSize.min, children: [
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: productSubmitForm?.customAttributes?.form
+                                ?.map((e) {
+                              if (e.type == FormType.text) {
+                                return PrimaryTextfield(
+                                    isRequired: e.required ?? false,
+                                    title: e.label ?? '',
+                                    controller: nameController);
+                              } else if (e.type == FormType.number) {
+                                return PrimaryTextfield(
+                                    isRequired: e.required ?? false,
+                                    title: e.label ?? '',
+                                    controller: priceController,
+                                    inputType:
+                                        TextInputType.numberWithOptions());
+                              } else if (e.type == FormType.fileUpload) {
+                                return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text('${e.label}',
+                                          style: AppTextTheme.bodyRegular16),
+                                      PickImageButton(
+                                          getUri: (uri) => imageUri = uri),
+                                    ]);
+                              }
+                              return Container();
+                            }).toList() ??
+                            []),
+                    const SizedBox(height: 10),
+                    PrimaryButton(
+                        backgroundColor: AppColor.blue,
+                        foregroundColor: AppColor.white,
+                        onPressed: createProduct,
+                        padding: EdgeInsets.symmetric(horizontal: 30),
+                        title: '${button?.customAttributes?.button?.text}'),
+                    const SizedBox(height: 12),
+                    state is ProductWaiting
+                        ? CircularProgressIndicator()
+                        : Expanded(
+                            child: GridView.builder(
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                        childAspectRatio: 0.8,
+                                        crossAxisCount: 2,
+                                        crossAxisSpacing: 12,
+                                        mainAxisSpacing: 12),
+                                itemBuilder: (context, index) {
+                                  final item = productList?.customAttributes
+                                      ?.productlist?.items?[index];
+
+                                  return item != null
+                                      ? ProductItem(items: item)
+                                      : Container();
+                                },
+                                itemCount: productList?.customAttributes
+                                    ?.productlist?.items?.length))
+                  ])));
+        }));
+  }
+
+  createProduct() {
+    if (nameController.text.isEmpty) {
+      showDialog(
+          context: context,
+          builder: (context) => Dialog(
+              backgroundColor: AppColor.backgroundColor,
+              child: Container(
+                  padding: EdgeInsets.all(16),
+                  child: Text("Tên không được để trống"))));
+
+      return;
+    }
+    if (priceController.text.isEmpty) {
+      showDialog(
+          context: context,
+          builder: (context) => Dialog(
+              backgroundColor: AppColor.backgroundColor,
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text("Giá không được để trống"),
+              )));
+
+      return;
+    }
+
+    cubit.createProductPage(attribute.Items(
+        name: nameController.text,
+        price: int.parse(priceController.text),
+        imageSrc: imageUri.toString()));
   }
 }

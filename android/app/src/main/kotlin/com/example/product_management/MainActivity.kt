@@ -1,4 +1,4 @@
-package com.example.teko_flutter
+package com.example.product_management
 
 import io.flutter.embedding.android.FlutterActivity
 
