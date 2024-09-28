@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:teko_flutter/data/constants.dart';
-import 'package:teko_flutter/data/local/local_data_access.dart';
+import 'package:teko_flutter/data/repository/local/local_data_access.dart';
 
 class SharedPrefHelper implements LocalDataAccess {
   final SharedPreferences sharedPref;
