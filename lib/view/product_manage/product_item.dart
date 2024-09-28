@@ -19,12 +19,10 @@ class ProductItem extends StatelessWidget {
           items.imageSrc != null
               ? Expanded(
                   child: Center(
-                      child: items.imageSrc?.startsWith("file") == null
-                          ? Container()
-                          : items.imageSrc!.startsWith("file")
-                              ? Image.file(File(items.imageSrc!))
-                              : Image.network(items.imageSrc!)))
-              : Expanded(child: Text('No imgae found')),
+                      child: !items.imageSrc!.startsWith("http")
+                          ? Image.file(File(items.imageSrc!))
+                          : Image.network(items.imageSrc!)))
+              : Expanded(child: Text('No image found')),
           const SizedBox(height: 4),
           Text('${items.name}', style: AppTextTheme.bodyBold18),
           Text('${StringUtils.numberToCurrency(items.price ?? 0)}',

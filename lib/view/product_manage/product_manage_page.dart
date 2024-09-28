@@ -168,6 +168,6 @@ class _ProductManagePageState extends State<ProductManagePage> {
     cubit.createProductPage(attribute.Items(
         name: nameController.text,
         price: int.parse(priceController.text),
-        imageSrc: imageUri.toString()));
+        imageSrc: imageUri));
   }
 }
