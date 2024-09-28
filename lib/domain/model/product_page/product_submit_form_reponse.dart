@@ -1,15 +1,16 @@
-import 'package:teko_flutter/domain/model/custom_attributes.dart';
+import 'package:teko_flutter/domain/model/product_page/custom_attributes_response.dart';
+import 'package:teko_flutter/domain/model/product_page/product_page_response.dart';
 
-class ProductSubmitFormResponse {
+class ProductSubmitFormResponse extends Data {
   String? type;
-  CustomAttributes? customAttributes;
+  CustomAttributesResponse? customAttributes;
 
   ProductSubmitFormResponse({this.type, this.customAttributes});
 
   ProductSubmitFormResponse.fromJson(Map<String, dynamic> json) {
     type = json['type'];
     customAttributes = json['customAttributes'] != null
-        ? new CustomAttributes.fromJson(json['customAttributes'])
+        ? new CustomAttributesResponse.fromJson(json['customAttributes'])
         : null;
   }
 

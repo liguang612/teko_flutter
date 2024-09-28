@@ -1,12 +1,13 @@
-class CustomAttributes {
+class CustomAttributesResponse {
   Label? label;
   List<Form>? form;
-  Label? button;
+  Button? button;
   Productlist? productlist;
 
-  CustomAttributes({this.label, this.form, this.button, this.productlist});
+  CustomAttributesResponse(
+      {this.label, this.form, this.button, this.productlist});
 
-  CustomAttributes.fromJson(Map<String, dynamic> json) {
+  CustomAttributesResponse.fromJson(Map<String, dynamic> json) {
     label = json['label'] != null ? new Label.fromJson(json['label']) : null;
     if (json['form'] != null) {
       form = <Form>[];
@@ -14,7 +15,8 @@ class CustomAttributes {
         form!.add(new Form.fromJson(v));
       });
     }
-    button = json['button'] != null ? new Label.fromJson(json['button']) : null;
+    button =
+        json['button'] != null ? new Button.fromJson(json['button']) : null;
     productlist = json['productlist'] != null
         ? new Productlist.fromJson(json['productlist'])
         : null;
@@ -91,6 +93,22 @@ class Form {
     data['maxLength'] = this.maxLength;
     data['minValue'] = this.minValue;
     data['maxValue'] = this.maxValue;
+    return data;
+  }
+}
+
+class Button {
+  String? text;
+
+  Button({this.text});
+
+  Button.fromJson(Map<String, dynamic> json) {
+    text = json['text'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['text'] = this.text;
     return data;
   }
 }

@@ -18,8 +18,4 @@ class ResponseWrapper<T> {
           statusCode: statusCode);
 }
 
-enum ResponseStatus {
-  success,
-  error,
-  loading,
-}
+enum ResponseStatus { success, error, loading }
