@@ -23,9 +23,15 @@ class ProductCubit extends Cubit<ProductState> {
     }
   }
 
-  createProductPage(Items item) {
+  createProductPage(Items item) async {
     emit(ProductWaiting());
 
-    emit(ProductCreateProductSuccess(item: item));
+    final response = await productRepository.createProduct(item);
+
+    if (response.status == ResponseStatus.success) {
+      emit(ProductCreateProductSuccess(item: response.data!));
+    } else {
+      emit(ProductCreateProductFailed(response.message ?? ''));
+    }
   }
 }

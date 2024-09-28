@@ -6,6 +6,7 @@ import 'package:teko_flutter/data/repository/interceptor/dio_base_options.dart';
 import 'package:teko_flutter/data/repository/remote/product_repository.dart';
 import 'package:teko_flutter/di/di.dart';
 import 'package:teko_flutter/domain/api/base_response.dart';
+import 'package:teko_flutter/domain/entity/product_page/custom_attributes.dart';
 import 'package:teko_flutter/domain/entity/product_page/product_page.dart';
 import 'package:teko_flutter/domain/model/product_page/product_page_response.dart';
 
@@ -33,6 +34,28 @@ class ProductRepositoryImpl implements ProductRepository {
 
       return ResponseWrapper.error(
           message: response.statusMessage, statusCode: response.statusCode);
+    } catch (e) {
+      return ResponseWrapper.error(message: '$e');
+    }
+  }
+
+  @override
+  Future<ResponseWrapper<Items>> createProduct(Items item) async {
+    try {
+      if (item.name?.isEmpty == true) {
+        return ResponseWrapper.error(
+            statusCode: 40000, message: "Tên sản phẩm không được trống");
+      }
+      if (item.price == null) {
+        return ResponseWrapper.error(
+            statusCode: 40000, message: "Giá sản phảma không được trống");
+      }
+
+      // Use post API to send creation request to server
+      // ...
+
+      // ... but I don't have one so, I suppose everything will be OK.
+      return ResponseWrapper.success(data: item);
     } catch (e) {
       return ResponseWrapper.error(message: '$e');
     }

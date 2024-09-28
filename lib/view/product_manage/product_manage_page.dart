@@ -65,6 +65,16 @@ class _ProductManagePageState extends State<ProductManagePage> {
             productList?.customAttributes?.productlist?.items
                 ?.insert(0, state.item);
           }
+
+          if (state is ProductCreateProductFailed) {
+            showDialog(
+                context: context,
+                builder: (context) => Dialog(
+                    backgroundColor: AppColor.backgroundColor,
+                    child: Container(
+                        padding: EdgeInsets.all(16),
+                        child: Text('${state.message}'))));
+          }
         }, builder: (context, state) {
           if (state is ProductInitial) {
             return Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -143,33 +153,9 @@ class _ProductManagePageState extends State<ProductManagePage> {
   }
 
   createProduct() {
-    if (nameController.text.isEmpty) {
-      showDialog(
-          context: context,
-          builder: (context) => Dialog(
-              backgroundColor: AppColor.backgroundColor,
-              child: Container(
-                  padding: EdgeInsets.all(16),
-                  child: Text("Tên không được để trống"))));
-
-      return;
-    }
-    if (priceController.text.isEmpty) {
-      showDialog(
-          context: context,
-          builder: (context) => Dialog(
-              backgroundColor: AppColor.backgroundColor,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text("Giá không được để trống"),
-              )));
-
-      return;
-    }
-
     cubit.createProductPage(attribute.Items(
         name: nameController.text,
-        price: int.parse(priceController.text),
+        price: int.tryParse(priceController.text),
         imageSrc: imageUri));
   }
 }

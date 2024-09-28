@@ -27,4 +27,12 @@ class ProductCreateProductSuccess extends ProductState {
   List<Object?> get props => [item];
 }
 
+class ProductCreateProductFailed extends ProductState {
+  final String message;
+
+  const ProductCreateProductFailed(this.message);
+  @override
+  List<Object?> get props => [message];
+}
+
 class ProductWaiting extends ProductState {}
