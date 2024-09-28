@@ -45,11 +45,8 @@ class _ProductManagePageState extends State<ProductManagePage> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
         value: cubit,
-        child:
-            BlocBuilder<ProductCubit, ProductState>(builder: (context, state) {
-          if (state is ProductInitial) {
-            return Scaffold(body: Center(child: CircularProgressIndicator()));
-          }
+        child: BlocConsumer<ProductCubit, ProductState>(
+            listener: (context, state) {
           if (state is ProductGetProductPageSuccess) {
             for (var element in state.productPage?.data ?? []) {
               if (element is TitleLabel) {
@@ -63,10 +60,15 @@ class _ProductManagePageState extends State<ProductManagePage> {
               }
             }
           }
-          if (state is ProductCreateProductSuccess) {
-            productList?.customAttributes?.productlist?.items?.add(state.item);
-          }
 
+          if (state is ProductCreateProductSuccess) {
+            productList?.customAttributes?.productlist?.items
+                ?.insert(0, state.item);
+          }
+        }, builder: (context, state) {
+          if (state is ProductInitial) {
+            return Scaffold(body: Center(child: CircularProgressIndicator()));
+          }
           return Scaffold(
               appBar: AppBar(
                   backgroundColor: AppColor.backgroundColor,
