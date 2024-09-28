@@ -35,4 +35,12 @@ class ProductCreateProductFailed extends ProductState {
   List<Object?> get props => [message];
 }
 
+class ProductSearchProduct extends ProductState {
+  final String keyword;
+
+  const ProductSearchProduct(this.keyword);
+  @override
+  List<Object?> get props => [keyword];
+}
+
 class ProductWaiting extends ProductState {}

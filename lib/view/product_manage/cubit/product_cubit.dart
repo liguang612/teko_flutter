@@ -34,4 +34,8 @@ class ProductCubit extends Cubit<ProductState> {
       emit(ProductCreateProductFailed(response.message ?? ''));
     }
   }
+
+  searchProduct(String? value) {
+    emit(ProductSearchProduct(value ?? ''));
+  }
 }

@@ -29,6 +29,7 @@ class _ProductManagePageState extends State<ProductManagePage> {
   final ProductCubit cubit = getIt.get();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
 
   TitleLabel? titleLabel;
   ProductSubmitForm? productSubmitForm;
@@ -81,9 +82,19 @@ class _ProductManagePageState extends State<ProductManagePage> {
                         child: Text('${state.message}'))));
           }
         }, builder: (context, state) {
+          List<attribute.Items>? itemsList = [];
+
           if (state is ProductInitial) {
             return Scaffold(body: Center(child: CircularProgressIndicator()));
           }
+          if (state is ProductSearchProduct) {
+            itemsList = productList?.customAttributes?.productlist?.items
+                ?.where((item) => item.name?.contains(state.keyword) == true)
+                .toList();
+          } else {
+            itemsList = productList?.customAttributes?.productlist?.items;
+          }
+
           return Scaffold(
               appBar: AppBar(
                   backgroundColor: AppColor.backgroundColor,
@@ -134,6 +145,12 @@ class _ProductManagePageState extends State<ProductManagePage> {
                         padding: EdgeInsets.symmetric(horizontal: 30),
                         title: '${button?.customAttributes?.button?.text}'),
                     const SizedBox(height: 12),
+                    PrimaryTextfield(
+                        hintText: 'Tìm kiếm sản phẩm',
+                        controller: searchController,
+                        onSubmitted: searchProduct,
+                        suffixIcon: Icon(Icons.search)),
+                    const SizedBox(height: 12),
                     state is ProductWaiting
                         ? CircularProgressIndicator()
                         : Expanded(
@@ -145,15 +162,13 @@ class _ProductManagePageState extends State<ProductManagePage> {
                                         crossAxisSpacing: 12,
                                         mainAxisSpacing: 12),
                                 itemBuilder: (context, index) {
-                                  final item = productList?.customAttributes
-                                      ?.productlist?.items?[index];
+                                  final item = itemsList?[index];
 
                                   return item != null
                                       ? ProductItem(items: item)
                                       : Container();
                                 },
-                                itemCount: productList?.customAttributes
-                                    ?.productlist?.items?.length))
+                                itemCount: itemsList?.length))
                   ])));
         }));
   }
@@ -163,5 +178,9 @@ class _ProductManagePageState extends State<ProductManagePage> {
         name: nameController.text,
         price: int.tryParse(priceController.text),
         imageSrc: imageUri));
+  }
+
+  searchProduct(String? value) {
+    cubit.searchProduct(value);
   }
 }

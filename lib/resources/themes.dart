@@ -11,4 +11,7 @@ class AppTextTheme {
       color: AppColor.black, fontWeight: FontWeight.w400, fontSize: 16);
   static const bodyRegular18 = TextStyle(
       color: AppColor.black, fontWeight: FontWeight.w400, fontSize: 18);
+
+  static const hintStyle = TextStyle(
+      color: AppColor.black02, fontWeight: FontWeight.normal, fontSize: 16);
 }
