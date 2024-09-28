@@ -25,6 +25,7 @@ class ProductManagePage extends StatefulWidget {
 
 class _ProductManagePageState extends State<ProductManagePage> {
   String? imageUri;
+  Key pickImageKey = UniqueKey();
   final ProductCubit cubit = getIt.get();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
@@ -64,6 +65,10 @@ class _ProductManagePageState extends State<ProductManagePage> {
           if (state is ProductCreateProductSuccess) {
             productList?.customAttributes?.productlist?.items
                 ?.insert(0, state.item);
+
+            nameController.text = '';
+            priceController.text = '';
+            pickImageKey = UniqueKey();
           }
 
           if (state is ProductCreateProductFailed) {
@@ -114,6 +119,7 @@ class _ProductManagePageState extends State<ProductManagePage> {
                                       Text('${e.label}',
                                           style: AppTextTheme.bodyRegular16),
                                       PickImageButton(
+                                          key: pickImageKey,
                                           getUri: (uri) => imageUri = uri),
                                     ]);
                               }

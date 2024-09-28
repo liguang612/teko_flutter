@@ -23,7 +23,7 @@ class PrimaryButton extends StatelessWidget {
     return IntrinsicWidth(
       child: ElevatedButton(
           style: ElevatedButton.styleFrom(
-              backgroundColor: backgroundColor?.withOpacity(0.5),
+              backgroundColor: backgroundColor,
               disabledBackgroundColor: backgroundColor,
               padding: padding ?? EdgeInsets.symmetric(horizontal: 10),
               shape: RoundedRectangleBorder(
