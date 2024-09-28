@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:teko_flutter/config/config.dart';
 import 'package:teko_flutter/config/routes.dart';
+import 'package:teko_flutter/di/di.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await configureInjection();
   runApp(const MyApp());
 }
 
